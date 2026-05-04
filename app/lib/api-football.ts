@@ -32,7 +32,7 @@ async function fetchAPI(endpoint: string, params: Record<string, string> = {}) {
   return data.response;
 }
 
-// Ligas europeias principais
+// Ligas principais
 const LEAGUES: Record<number, LeagueInfo> = {
   39: { name: "Premier League", country: "England", season: 2024 },
   140: { name: "La Liga", country: "Spain", season: 2024 },
@@ -40,6 +40,7 @@ const LEAGUES: Record<number, LeagueInfo> = {
   78: { name: "Bundesliga", country: "Germany", season: 2024 },
   61: { name: "Ligue 1", country: "France", season: 2024 },
   2: { name: "Champions League", country: "Europe", season: 2024 },
+  71: { name: "Brasileirão Série A", country: "Brazil", season: 2024 },
 };
 
 export async function getLeagues(): Promise<League[]> {
