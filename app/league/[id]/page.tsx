@@ -1,9 +1,27 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getLeagueStandings, getLeagueTopScorers, getLeagueFixtures, LEAGUES } from "../../lib/api-football";
 
 interface LeaguePageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: LeaguePageProps) {
+  const { id } = await params;
+  const leagueId = parseInt(id);
+  const leagueInfo = LEAGUES[leagueId as keyof typeof LEAGUES];
+
+  if (!leagueInfo) {
+    return {
+      title: "Liga não encontrada - SportStatMuse",
+    };
+  }
+
+  return {
+    title: `${leagueInfo.name} ${leagueInfo.season} - SportStatMuse`,
+    description: `Classificação, artilheiros e próximos jogos da ${leagueInfo.name} temporada ${leagueInfo.season}.`,
+  };
 }
 
 export default async function LeaguePage({ params }: LeaguePageProps) {
@@ -51,12 +69,12 @@ export default async function LeaguePage({ params }: LeaguePageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {standings.map((team: any, i: number) => (
+                  {standings.map((team, i) => (
                     <tr key={team.team.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
                       <td className="p-2 font-semibold">{i + 1}</td>
                       <td className="p-2">
                         <div className="flex items-center gap-3">
-                          <img src={team.team.logo} alt={team.team.name} className="w-6 h-6 object-contain" />
+                          <Image src={team.team.logo} alt={team.team.name} width={24} height={24} className="object-contain" />
                           <span>{team.team.name}</span>
                         </div>
                       </td>
@@ -74,24 +92,24 @@ export default async function LeaguePage({ params }: LeaguePageProps) {
 
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
             <h2 className="text-2xl font-bold mb-6">Próximos Jogos</h2>
-            <div className="space-y-4">
-              {fixtures.map((fixture: any) => (
-                <div key={fixture.fixture.id} className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <img src={fixture.teams.home.logo} alt={fixture.teams.home.name} className="w-8 h-8 object-contain" />
-                    <span className="font-semibold">{fixture.teams.home.name}</span>
+              <div className="space-y-4">
+                {fixtures.map((fixture) => (
+                  <div key={fixture.fixture.id} className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Image src={fixture.teams.home.logo} alt={fixture.teams.home.name} width={32} height={32} className="object-contain" />
+                      <span className="font-semibold">{fixture.teams.home.name}</span>
+                    </div>
+                    <span className="text-zinc-400">vs</span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold">{fixture.teams.away.name}</span>
+                      <Image src={fixture.teams.away.logo} alt={fixture.teams.away.name} width={32} height={32} className="object-contain" />
+                    </div>
+                    <span className="text-sm text-zinc-400">
+                      {new Date(fixture.fixture.date).toLocaleDateString("pt-BR")}
+                    </span>
                   </div>
-                  <span className="text-zinc-400">vs</span>
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold">{fixture.teams.away.name}</span>
-                    <img src={fixture.teams.away.logo} alt={fixture.teams.away.name} className="w-8 h-8 object-contain" />
-                  </div>
-                  <span className="text-sm text-zinc-400">
-                    {new Date(fixture.fixture.date).toLocaleDateString("pt-BR")}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
           </div>
         </div>
 
@@ -99,10 +117,10 @@ export default async function LeaguePage({ params }: LeaguePageProps) {
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 sticky top-8">
             <h2 className="text-2xl font-bold mb-6">Artilheiros</h2>
             <div className="space-y-4">
-              {topScorers.map((scorer: any, i: number) => (
+              {topScorers.map((scorer, i) => (
                 <div key={scorer.player.id} className="flex items-center gap-4">
                   <span className="text-2xl font-bold text-zinc-600 w-8">{i + 1}</span>
-                  <img src={scorer.player.photo} alt={scorer.player.name} className="w-10 h-10 rounded-full object-cover" />
+                  <Image src={scorer.player.photo} alt={scorer.player.name} width={40} height={40} className="rounded-full object-cover" />
                   <div className="flex-1">
                     <p className="font-semibold text-sm">{scorer.player.name}</p>
                     <p className="text-xs text-zinc-400">{scorer.statistics[0].team.name}</p>

@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { getLeagues, getTrending } from "./lib/api-football";
+import LeagueCard from "../components/LeagueCard";
+
+export async function generateMetadata() {
+  return {
+    title: "SportStatMuse - Estatísticas de Futebol Europeu",
+    description:
+      "Confira estatísticas, classificações, artilheiros e próximos jogos das principais ligas europeias de futebol.",
+  };
+}
 
 export default async function Home() {
   const leagues = await getLeagues();
@@ -26,37 +35,15 @@ export default async function Home() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-        {leagues.map((league: any) => (
-          <Link
-            key={league.id}
-            href={`/league/${league.id}`}
-            className="group relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all p-6"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <img src={league.logo} alt={league.name} className="w-12 h-12 object-contain" />
-              <div>
-                <h3 className="text-lg font-semibold">{league.name}</h3>
-                <p className="text-sm text-zinc-400">{league.season}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-zinc-400">Artilheiro</p>
-                <p className="font-semibold">{league.topScorer || "Carregando..."}</p>
-              </div>
-              <div>
-                <p className="text-zinc-400">Líder</p>
-                <p className="font-semibold">{league.leader || "Carregando..."}</p>
-              </div>
-            </div>
-          </Link>
+        {leagues.map((league) => (
+          <LeagueCard key={league.id} league={league} />
         ))}
       </div>
 
       <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-8">
         <h2 className="text-2xl font-bold mb-6">Trending</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {trending.map((item: any, i: number) => (
+          {trending.map((item, i) => (
             <div key={i} className="p-4 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors">
               <p className="text-sm text-zinc-400 mb-1">{item.category}</p>
               <p className="font-semibold">{item.title}</p>

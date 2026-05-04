@@ -1,7 +1,17 @@
-const API_KEY = process.env.API_FOOTBALL_KEY || "demo";
+import type { LeagueInfo, League, StandingTeam, TopScorer, Fixture, Player, Team, TrendingItem } from "../../types/api";
+
 const BASE_URL = "https://v3.football.api-sports.io";
 
+function getApiKey(): string {
+  const apiKey = process.env.API_FOOTBALL_KEY;
+  if (!apiKey) {
+    throw new Error("API_FOOTBALL_KEY não configurada. Configure a variável de ambiente.");
+  }
+  return apiKey;
+}
+
 async function fetchAPI(endpoint: string, params: Record<string, string> = {}) {
+  const API_KEY = getApiKey();
   const url = new URL(`${BASE_URL}${endpoint}`);
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, value);
@@ -23,7 +33,7 @@ async function fetchAPI(endpoint: string, params: Record<string, string> = {}) {
 }
 
 // Ligas europeias principais
-const LEAGUES = {
+const LEAGUES: Record<number, LeagueInfo> = {
   39: { name: "Premier League", country: "England", season: 2024 },
   140: { name: "La Liga", country: "Spain", season: 2024 },
   135: { name: "Serie A", country: "Italy", season: 2024 },
@@ -32,7 +42,7 @@ const LEAGUES = {
   2: { name: "Champions League", country: "Europe", season: 2024 },
 };
 
-export async function getLeagues() {
+export async function getLeagues(): Promise<League[]> {
   const leagues = await Promise.all(
     Object.entries(LEAGUES).map(async ([id, info]) => {
       try {
@@ -65,9 +75,9 @@ export async function getLeagues() {
   return leagues;
 }
 
-export async function getLeagueStandings(leagueId: number) {
+export async function getLeagueStandings(leagueId: number): Promise<StandingTeam[]> {
   const info = LEAGUES[leagueId as keyof typeof LEAGUES];
-  if (!info) return null;
+  if (!info) return [];
 
   try {
     const standings = await fetchAPI("/standings", {
@@ -80,7 +90,7 @@ export async function getLeagueStandings(leagueId: number) {
   }
 }
 
-export async function getLeagueTopScorers(leagueId: number) {
+export async function getLeagueTopScorers(leagueId: number): Promise<TopScorer[]> {
   const info = LEAGUES[leagueId as keyof typeof LEAGUES];
   if (!info) return [];
 
@@ -95,7 +105,7 @@ export async function getLeagueTopScorers(leagueId: number) {
   }
 }
 
-export async function getLeagueFixtures(leagueId: number, status = "NS") {
+export async function getLeagueFixtures(leagueId: number, status = "NS"): Promise<Fixture[]> {
   const info = LEAGUES[leagueId as keyof typeof LEAGUES];
   if (!info) return [];
 
@@ -111,7 +121,7 @@ export async function getLeagueFixtures(leagueId: number, status = "NS") {
   }
 }
 
-export async function searchPlayers(query: string) {
+export async function searchPlayers(query: string): Promise<Player[]> {
   try {
     const players = await fetchAPI("/players", {
       search: query,
@@ -124,7 +134,7 @@ export async function searchPlayers(query: string) {
   }
 }
 
-export async function searchTeams(query: string) {
+export async function searchTeams(query: string): Promise<Team[]> {
   try {
     const teams = await fetchAPI("/teams", { search: query });
     return teams.slice(0, 10);
@@ -133,7 +143,7 @@ export async function searchTeams(query: string) {
   }
 }
 
-export async function getTrending() {
+export async function getTrending(): Promise<TrendingItem[]> {
   return [
     { category: "Premier League", title: "Quem marcou mais gols na temporada?" },
     { category: "La Liga", title: "Classificação atual da La Liga" },

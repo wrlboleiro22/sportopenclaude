@@ -2,24 +2,28 @@
 
 import { useState } from "react";
 import { searchPlayers, searchTeams } from "../lib/api-football";
+import PlayerCard from "../../components/PlayerCard";
+import TeamCard from "../../components/TeamCard";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<SearchResults | null>(null);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
 
     setLoading(true);
+    setError(null);
     try {
       const [players, teams] = await Promise.all([
         searchPlayers(query),
         searchTeams(query),
       ]);
       setResults({ players, teams });
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch (err) {
+      console.error("Search error:", err);
+      setError("Ocorreu um erro na busca. Tente novamente.");
+      setResults(null);
     } finally {
       setLoading(false);
     }
@@ -78,22 +82,20 @@ export default function SearchPage() {
         ))}
       </div>
 
+      {error && (
+        <div className="text-center py-8 px-4 bg-red-900/20 border border-red-800 rounded-2xl">
+          <p className="text-red-400">{error}</p>
+        </div>
+      )}
+
       {results && (
         <div className="space-y-8">
           {results.players.length > 0 && (
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
               <h2 className="text-2xl font-bold mb-6">Jogadores</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {results.players.map((player: any) => (
-                  <div key={player.player.id} className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-lg">
-                    <img src={player.player.photo} alt={player.player.name} className="w-12 h-12 rounded-full object-cover" />
-                    <div>
-                      <p className="font-semibold">{player.player.name}</p>
-                      <p className="text-sm text-zinc-400">
-                        {player.statistics?.[0]?.team?.name} • {player.statistics?.[0]?.goals?.total || 0} gols
-                      </p>
-                    </div>
-                  </div>
+                {results.players.map((player) => (
+                  <PlayerCard key={player.player.id} player={player} />
                 ))}
               </div>
             </div>
@@ -103,14 +105,8 @@ export default function SearchPage() {
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
               <h2 className="text-2xl font-bold mb-6">Times</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {results.teams.map((team: any) => (
-                  <div key={team.team.id} className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-lg">
-                    <img src={team.team.logo} alt={team.team.name} className="w-12 h-12 object-contain" />
-                    <div>
-                      <p className="font-semibold">{team.team.name}</p>
-                      <p className="text-sm text-zinc-400">{team.team.country}</p>
-                    </div>
-                  </div>
+                {results.teams.map((team) => (
+                  <TeamCard key={team.team.id} team={team} />
                 ))}
               </div>
             </div>
@@ -118,7 +114,7 @@ export default function SearchPage() {
         </div>
       )}
 
-      {!results && !loading && (
+      {!results && !loading && !error && (
         <div className="text-center py-12">
           <p className="text-zinc-500">
             Digite uma pergunta ou escolha uma sugestão acima

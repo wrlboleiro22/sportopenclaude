@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -38,25 +39,25 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-8">
-                <a href="/" className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                <Link href="/" className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   SportStatMuse
-                </a>
+                </Link>
                 <nav className="hidden md:flex items-center gap-1">
                   {leagues.map((league) => (
-                    <a
+                    <Link
                       key={league.id}
                       href={`/league/${league.id}`}
                       className="px-3 py-2 text-sm rounded-lg hover:bg-zinc-800 transition-colors"
                     >
                       {league.flag} {league.name}
-                    </a>
+                    </Link>
                   ))}
                 </nav>
               </div>
               <div className="flex items-center gap-4">
-                <a href="/search" className="px-4 py-2 text-sm bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors">
+                <Link href="/search" className="px-4 py-2 text-sm bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors">
                   Busca IA
-                </a>
+                </Link>
               </div>
             </div>
           </div>
