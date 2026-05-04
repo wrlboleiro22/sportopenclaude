@@ -1,65 +1,69 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getLeagues, getTrending } from "./lib/api-football";
 
-export default function Home() {
+export default async function Home() {
+  const leagues = await getLeagues();
+  const trending = await getTrending();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+          SportStatMuse
+        </h1>
+        <p className="text-xl text-zinc-400 mb-8">
+          Estatísticas de futebol europeu com busca inteligente
+        </p>
+        <Link
+          href="/search"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Buscar Estatísticas
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        {leagues.map((league: any) => (
+          <Link
+            key={league.id}
+            href={`/league/${league.id}`}
+            className="group relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all p-6"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div className="flex items-center gap-4 mb-4">
+              <img src={league.logo} alt={league.name} className="w-12 h-12 object-contain" />
+              <div>
+                <h3 className="text-lg font-semibold">{league.name}</h3>
+                <p className="text-sm text-zinc-400">{league.season}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-zinc-400">Artilheiro</p>
+                <p className="font-semibold">{league.topScorer || "Carregando..."}</p>
+              </div>
+              <div>
+                <p className="text-zinc-400">Líder</p>
+                <p className="font-semibold">{league.leader || "Carregando..."}</p>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-8">
+        <h2 className="text-2xl font-bold mb-6">Trending</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {trending.map((item: any, i: number) => (
+            <div key={i} className="p-4 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors">
+              <p className="text-sm text-zinc-400 mb-1">{item.category}</p>
+              <p className="font-semibold">{item.title}</p>
+            </div>
+          ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
