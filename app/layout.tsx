@@ -26,6 +26,9 @@ const leagues = [
   { id: 61, name: "Ligue 1", flag: "🇫🇷" },
   { id: 2, name: "Champions League", flag: "🏆" },
   { id: 71, name: "Brasileirão", flag: "🇧🇷" },
+  { id: 75, name: "Copa do Brasil", flag: "🇧🇷" },
+  { id: 13, name: "Libertadores", flag: "🏆" },
+  { id: 11, name: "Sulamericana", flag: "🏆" },
 ];
 
 export default function RootLayout({

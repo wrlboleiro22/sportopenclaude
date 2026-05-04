@@ -41,6 +41,9 @@ const LEAGUES: Record<number, LeagueInfo> = {
   61: { name: "Ligue 1", country: "France", season: 2024 },
   2: { name: "Champions League", country: "Europe", season: 2024 },
   71: { name: "Brasileirão Série A", country: "Brazil", season: 2024 },
+  75: { name: "Copa do Brasil", country: "Brazil", season: 2024 },
+  13: { name: "Libertadores", country: "South America", season: 2024 },
+  11: { name: "Sulamericana", country: "South America", season: 2024 },
 };
 
 export async function getLeagues(): Promise<League[]> {
